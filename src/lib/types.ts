@@ -42,6 +42,18 @@ export interface Budget {
   startDate: Date
 }
 
+export interface Income {
+  id?: number
+  amount: number
+  currency: string
+  source: string
+  description: string
+  notes?: string
+  date: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Settings {
   key: string
   value: any

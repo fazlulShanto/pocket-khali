@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from "dexie"
-import type { Expense, Category, Tag, Budget, Settings } from "./types"
+import type { Expense, Category, Tag, Budget, Settings, Income } from "./types"
 
 export class PocketKhaliDB extends Dexie {
   expenses!: EntityTable<Expense, "id">
@@ -7,6 +7,7 @@ export class PocketKhaliDB extends Dexie {
   tags!: EntityTable<Tag, "id">
   budgets!: EntityTable<Budget, "id">
   settings!: EntityTable<Settings, "key">
+  incomes!: EntityTable<Income, "id">
 
   constructor() {
     super("PocketKhaliDB")
@@ -24,6 +25,10 @@ export class PocketKhaliDB extends Dexie {
     // v3: add syncStatus index to expenses for cloud sync
     this.version(3).stores({
       expenses: "++id, date, categoryId, [categoryId+date], syncStatus"
+    })
+    // v4: add incomes table
+    this.version(4).stores({
+      incomes: "++id, date, source"
     })
   }
 }

@@ -1,8 +1,10 @@
 import * as React from "react"
 import { useRouterState, Outlet } from "@tanstack/react-router"
-import { ExpenseForm } from "../expense-form"
+import { TransactionSheet } from "../transaction-sheet"
+import type { FormType } from "../transaction-sheet"
 import { Toaster } from "@/components/ui/sonner"
 import { useExpenses } from "@/hooks/use-expenses"
+import { useIncomes } from "@/hooks/use-incomes"
 import { toast } from "sonner"
 import { useBudgets } from "@/hooks/use-budgets"
 import { CloudSyncIndicator } from "./cloud-sync-indicator"
@@ -11,33 +13,36 @@ import { BottomNav } from "./bottom-nav"
 export function AppShell() {
   const routerState = useRouterState()
   const { addExpense } = useExpenses()
+  const { addIncome } = useIncomes()
   const { getBudgetStatus } = useBudgets()
-  const [expenseFormOpen, setExpenseFormOpen] = React.useState(false)
+  const [sheetOpen, setSheetOpen] = React.useState(false)
+  const [initialFormType, setInitialFormType] = React.useState<FormType>("expense")
 
   const handleSaveExpense = async (expense: any) => {
     await addExpense(expense)
     const checkLimit = (statusObj: ReturnType<typeof getBudgetStatus>, name: string) => {
-      if (statusObj && statusObj.status !== "normal") {
-        if (statusObj.status === "warning") {
-          toast.warning(`You're at ${Math.round(statusObj.percent)}% of your ${name.toLowerCase()} budget.`)
-        } else if (statusObj.status === "critical") {
-          toast.error(`Only ${100 - Math.round(statusObj.percent)}% left in your ${name.toLowerCase()}!`)
-        } else if (statusObj.status === "overspent") {
-          toast.error(`You've overspent your ${name.toLowerCase()} budget!`)
-        }
-      }
+      if (!statusObj || statusObj.status === "normal") return
+      if (statusObj.status === "warning")
+        toast.warning(`You're at ${Math.round(statusObj.percent)}% of your ${name.toLowerCase()} budget.`)
+      else if (statusObj.status === "critical")
+        toast.error(`Only ${100 - Math.round(statusObj.percent)}% left in your ${name.toLowerCase()}!`)
+      else if (statusObj.status === "overspent")
+        toast.error(`You've overspent your ${name.toLowerCase()} budget!`)
     }
-
     checkLimit(getBudgetStatus(expense.categoryId), "category")
     checkLimit(getBudgetStatus("overall"), "overall")
-    toast.success("Expense saved successfully.")
+    toast.success("Expense saved.")
+  }
+
+  const handleSaveIncome = async (income: any) => {
+    await addIncome(income)
+    toast.success("Income saved.")
   }
 
   const isSettingsActive =
     routerState.location.pathname.startsWith("/settings") ||
     routerState.location.pathname.startsWith("/categories")
 
-  // Don't show nav/shell on login page
   const isAuthPage = routerState.location.pathname === "/login"
   if (isAuthPage) {
     return (
@@ -50,7 +55,6 @@ export function AppShell() {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background">
-      {/* Top bar with cloud sync indicator */}
       <div className="p-3">
         <CloudSyncIndicator />
       </div>
@@ -59,18 +63,21 @@ export function AppShell() {
         <Outlet />
       </main>
 
-      {/* Floating Bottom Navigation (FAB + Pill) */}
       <BottomNav
-        onFabClick={() => setExpenseFormOpen(true)}
+        onFabClick={() => {
+          setInitialFormType("expense")
+          setSheetOpen(true)
+        }}
         currentPath={routerState.location.pathname}
         isSettingsActive={isSettingsActive}
       />
 
-      {/* Global Overlays */}
-      <ExpenseForm
-        open={expenseFormOpen}
-        onOpenChange={setExpenseFormOpen}
-        onSave={handleSaveExpense}
+      <TransactionSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        initialType={initialFormType}
+        onSaveExpense={handleSaveExpense}
+        onSaveIncome={handleSaveIncome}
       />
       <Toaster position="top-center" richColors />
     </div>
