@@ -3,6 +3,8 @@ import { Sheet, SheetContent, SheetDescription } from "@/components/ui/sheet"
 import type { Expense, Income } from "@/lib/types"
 import { ExpenseFormFields } from "./expense-form"
 import { IncomeFormFields } from "./income-form"
+import { ArrowDown, ArrowUp, MoveUp } from "lucide-react"
+import { Button } from "../ui/button"
 
 export type FormType = "expense" | "income"
 
@@ -36,7 +38,7 @@ export function TransactionSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="h-[92vh] w-full max-w-2xl mx-auto rounded-t-2xl flex flex-col p-0 gap-0 overflow-hidden"
+        className="h-[92vh] w-full max-w-2xl mx-auto rounded-t-2xl flex flex-col p-0 gap-0 overflow-hidden [&>button>svg]:hidden"
       >
         <SheetDescription className="sr-only">Add a new expense or income record.</SheetDescription>
 
@@ -49,31 +51,29 @@ export function TransactionSheet({
           {/* Type toggle — hide when editing (always expense) */}
           {!isEditing && (
             <div className="flex rounded-lg bg-muted p-0.5 gap-0.5">
-              <button
+              <Button
                 type="button"
                 onClick={() => setFormType("expense")}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${
-                  formType === "expense"
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${formType === "expense"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground bg-secondary"
+                  }`}
               >
-                ⬇ Expense
-              </button>
-              <button
+                <ArrowUp size={16} /> Expense
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setFormType("income")}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${
-                  formType === "income" ? "text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-200 ${formType === "income" ? "text-white shadow-sm" : "text-muted-foreground bg-secondary hover:text-foreground"
+                  }`}
                 style={
                   formType === "income"
                     ? { background: "linear-gradient(135deg,#166534,#15803d)" }
                     : {}
                 }
               >
-                ⬆ Income
-              </button>
+                <ArrowDown size={16} /> Income
+              </Button>
             </div>
           )}
         </div>

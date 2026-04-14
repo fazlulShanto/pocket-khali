@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChevronDown, ChevronUp, Camera, X } from "lucide-react"
 import { expenseSchema, localDateString } from "./schemas"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 interface ExpenseFormProps {
   initialData?: Expense
@@ -96,7 +97,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
         <form.Field name="amount">
           {(field) => (
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-semibold text-muted-foreground">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xl font-semibold text-muted-foreground">
                 {currencySymbol}
               </span>
               <Input
@@ -109,7 +110,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.valueAsNumber)}
                 autoFocus
-                className="text-4xl font-bold h-16 pl-10 border-0 border-b-2 border-transparent bg-muted/30 focus-visible:ring-0 focus-visible:border-primary rounded-none"
+                className="text-xl font-bold h-fit pl-10 border-0 border-b-2 border-transparent bg-muted/30 focus-visible:ring-0 focus-visible:border-primary rounded-none"
                 placeholder="0.00"
               />
               <FieldError errors={field.state.meta.errors as string[]} />
@@ -143,7 +144,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                className="text-lg py-6 border-x-0 border-t-0 border-b bg-transparent focus-visible:ring-0 focus-visible:border-primary rounded-none px-1"
+                className="text-sm py-2 border-x-0 border-t-0 border-b bg-transparent focus-visible:ring-0 focus-visible:border-primary rounded-none px-1"
               />
               <FieldError errors={field.state.meta.errors as string[]} />
             </div>
@@ -155,7 +156,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
           {(field) => (
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Category</Label>
-              <div className="flex overflow-x-auto pb-2 gap-2 snap-x py-1 scrollbar-hide">
+              <div className="flex overflow-x-auto pb-2 gap-2 snap-x py-1 scrollbar-hide px-2">
                 {categories?.map((c) => {
                   const Icon = getIcon(c.icon)
                   const selected = field.state.value === c.id
@@ -164,15 +165,14 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                       key={c.id}
                       type="button"
                       onClick={() => field.handleChange(c.id!)}
-                      className={`flex flex-col items-center justify-center min-w-[68px] h-[76px] rounded-xl transition-all snap-start shrink-0 ${
-                        selected
-                          ? "ring-2 ring-offset-2 ring-offset-background shadow-md scale-105"
-                          : "hover:bg-muted/50 border bg-card"
-                      }`}
+                      className={`flex flex-col items-center justify-center h-16 w-20 rounded-xl transition-all snap-start shrink-0 ${selected
+                        ? "ring-1 ring-offset-1 ring-offset-background shadow-md"
+                        : "hover:bg-muted/50 border bg-card"
+                        }`}
                       style={selected ? { backgroundColor: c.color, color: "#fff" } : {}}
                     >
-                      <Icon className="w-5 h-5 mb-1" style={!selected ? { color: c.color } : {}} />
-                      <span className="text-[10px] text-center px-1 leading-tight line-clamp-2 w-full break-words">
+                      <Icon className="size-4" style={!selected ? { color: c.color } : {}} />
+                      <span className="text-xs text-center px-1 leading-tight line-clamp-2 w-full break-words">
                         {c.name}
                       </span>
                     </button>
@@ -187,9 +187,9 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
         {/* Advanced toggle */}
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="sm"
-          className="w-full text-muted-foreground justify-center py-5 border-y"
+          className="w-full text-muted-foreground justify-center py-3 border-y"
           onClick={() => setShowAdvanced((v) => !v)}
         >
           {showAdvanced
@@ -198,13 +198,13 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
         </Button>
 
         {showAdvanced && (
-          <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="grid grid-cols-2 gap-4">
               {/* Date */}
               <form.Field name="date">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <Label>Date &amp; Time</Label>
+                    {/* <Label>Date &amp; Time</Label> */}
                     <Input
                       type="datetime-local"
                       name={field.name}
@@ -221,21 +221,24 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
               <form.Field name="paymentMethod">
                 {(field) => (
                   <div className="space-y-1.5">
-                    <Label>Payment Method</Label>
-                    <select
-                      name={field.name}
+                    <Select
                       value={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      onValueChange={(v) => field.handleChange(v)}
                     >
-                      <option value="cash">Cash</option>
-                      <option value="bank_card">Bank Card</option>
-                      <option value="bkash">bKash</option>
-                      <option value="nagad">Nagad</option>
-                      <option value="rocket">Rocket</option>
-                      <option value="other">Other</option>
-                    </select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Payment method" />
+                      </SelectTrigger>
+                      <SelectContent className="w-full">
+                        <SelectGroup>
+                          <SelectItem value="cash">Cash</SelectItem>
+                          <SelectItem value="bank_card">Bank Card</SelectItem>
+                          <SelectItem value="bkash">bKash</SelectItem>
+                          <SelectItem value="nagad">Nagad</SelectItem>
+                          <SelectItem value="rocket">Rocket</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 )}
               </form.Field>
@@ -260,9 +263,8 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                                 active ? prev.filter((x) => x !== t.name) : [...prev, t.name]
                               )
                             }}
-                            className={`text-xs px-3 py-1 rounded-full border transition-colors ${
-                              active ? "bg-primary text-primary-foreground" : "bg-muted/50 hover:bg-muted"
-                            }`}
+                            className={`text-xs px-3 py-1 rounded-full border transition-colors ${active ? "bg-primary text-primary-foreground" : "bg-muted/50 hover:bg-muted"
+                              }`}
                           >
                             #{t.name}
                           </button>
@@ -277,10 +279,10 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
             {/* Notes */}
             <form.Field name="notes">
               {(field) => (
-                <div className="space-y-1.5">
-                  <Label>Notes (Optional)</Label>
+                <div className="space-y-1">
+                  {/* <Label>Notes (Optional)</Label> */}
                   <Input
-                    placeholder="Additional details…"
+                    placeholder="Additional notes"
                     name={field.name}
                     value={field.state.value}
                     onBlur={field.handleBlur}
@@ -292,7 +294,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
 
             {/* Photo */}
             <div className="space-y-1.5">
-              <Label>Receipt / Photo</Label>
+              {/* <Label>Receipt / Photo</Label> */}
               {photoPreview ? (
                 <div className="relative w-max">
                   <img src={photoPreview} alt="Receipt preview" className="h-32 rounded-md object-cover border" />
@@ -312,10 +314,10 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
-                  <Button type="button" variant="outline" className="gap-2" onClick={() => fileInputRef.current?.click()}>
+                  <Button type="button" variant="outline" className="gap-2 w-full" onClick={() => fileInputRef.current?.click()}>
                     <Camera className="w-4 h-4" />Add Photo
                   </Button>
-                  <span className="text-xs text-muted-foreground">Compresses automatically</span>
+
                 </div>
               )}
               <input type="file" ref={fileInputRef} className="hidden" accept="image/*" capture="environment" onChange={handlePhotoUpload} />

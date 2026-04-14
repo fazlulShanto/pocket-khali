@@ -53,7 +53,7 @@ export function IncomeFormFields({ onSave, onClose }: IncomeFormProps) {
         <form.Field name="amount">
           {(field) => (
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-2xl font-semibold text-muted-foreground">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xl font-semibold text-muted-foreground">
                 {currencySymbol}
               </span>
               <Input
@@ -66,7 +66,7 @@ export function IncomeFormFields({ onSave, onClose }: IncomeFormProps) {
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.valueAsNumber)}
                 autoFocus
-                className="text-4xl font-bold h-16 pl-10 border-0 border-b-2 border-transparent bg-muted/30 focus-visible:ring-0 focus-visible:border-primary rounded-none"
+                className="text-xl font-bold h-fit pl-10 border-0 border-b-2 border-transparent bg-muted/30 focus-visible:ring-0 focus-visible:border-primary rounded-none"
                 placeholder="0.00"
               />
               <FieldError errors={field.state.meta.errors as string[]} />
