@@ -5,10 +5,20 @@ import { useCategories } from "@/hooks/use-categories"
 import { TransactionSheet } from "@/components/transaction-sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, TrendingUp } from "lucide-react"
+import { ArrowDown, ArrowUp, Search, Trash2, TrendingUp } from "lucide-react"
 import type { Expense, Income } from "@/lib/types"
 import { getIcon } from "@/components/icons"
 import { useSettings } from "@/hooks/use-settings"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 type Tab = "all" | "expense" | "income"
 
@@ -48,6 +58,11 @@ export const TransactionsPage = () => {
   const [search, setSearch] = React.useState("")
   const [formOpen, setFormOpen] = React.useState(false)
   const [editingExpense, setEditingExpense] = React.useState<Expense | undefined>(undefined)
+  const [pendingDelete, setPendingDelete] = React.useState<
+    | { kind: "expense"; id: number; label: string }
+    | { kind: "income"; id: number; label: string }
+    | null
+  >(null)
 
   // Build unified + filtered list
   const unified = React.useMemo<UnifiedEntry[]>(() => {
@@ -129,14 +144,21 @@ export const TransactionsPage = () => {
     // Income editing not wired in the transactions page (add via FAB)
   }
 
-  const handleDeleteExpense = async (id: number | undefined) => {
+  const handleDeleteExpense = (id: number | undefined, label: string) => {
     if (!id) return
-    if (confirm("Delete this expense?")) await deleteExpense(id)
+    setPendingDelete({ kind: "expense", id, label })
   }
 
-  const handleDeleteIncome = async (id: number | undefined) => {
+  const handleDeleteIncome = (id: number | undefined, label: string) => {
     if (!id) return
-    if (confirm("Delete this income entry?")) await deleteIncome(id)
+    setPendingDelete({ kind: "income", id, label })
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDelete) return
+    if (pendingDelete.kind === "expense") await deleteExpense(pendingDelete.id)
+    else await deleteIncome(pendingDelete.id)
+    setPendingDelete(null)
   }
 
   const tabs: { key: Tab; label: string }[] = [
@@ -160,23 +182,23 @@ export const TransactionsPage = () => {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+              className="flex-1 py-2 rounded-lg text-sm flex items-center justify-center gap-1 font-semibold transition-all duration-200"
               style={
                 tab === t.key
                   ? {
-                      background:
-                        t.key === "income"
-                          ? "linear-gradient(135deg, #166534, #15803d)"
-                          : t.key === "expense"
+                    background:
+                      t.key === "income"
+                        ? "linear-gradient(135deg, #166534, #15803d)"
+                        : t.key === "expense"
                           ? "linear-gradient(135deg, oklch(0.491 0.27 292.581), oklch(0.432 0.232 292.759))"
                           : "var(--card)",
-                      color: t.key === "all" ? "var(--foreground)" : "#fff",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                    }
+                    color: t.key === "all" ? "var(--foreground)" : "#fff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                  }
                   : { color: "var(--muted-foreground)", background: "transparent" }
               }
             >
-              {t.key === "income" ? "⬆️ " : t.key === "expense" ? "⬇️ " : ""}
+              {t.key === "income" ? <ArrowUp className="size-4" /> : t.key === "expense" ? <ArrowDown className="size-4" /> : ""}
               {t.label}
             </button>
           ))}
@@ -256,10 +278,11 @@ export const TransactionsPage = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-7 px-2 text-xs text-destructive opacity-60 hover:opacity-100 bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground transition-all rounded-md"
-                            onClick={e => { e.stopPropagation(); handleDeleteExpense(expense.id) }}
+                            className="h-7 px-2 text-xs text-destructive opacity-90 hover:opacity-100 bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground transition-all rounded-md"
+                            onClick={e => { e.stopPropagation(); handleDeleteExpense(expense.id, expense.description || "this expense") }}
                           >
-                            Delete
+
+                            <Trash2 className="size-3" /> Delete
                           </Button>
                         </div>
                       </div>
@@ -292,7 +315,7 @@ export const TransactionsPage = () => {
                           variant="ghost"
                           size="sm"
                           className="h-7 px-2 text-xs text-destructive opacity-60 hover:opacity-100 bg-destructive/10 hover:bg-destructive hover:text-destructive-foreground transition-all rounded-md"
-                          onClick={e => { e.stopPropagation(); handleDeleteIncome(income.id) }}
+                          onClick={e => { e.stopPropagation(); handleDeleteIncome(income.id, income.source || "this income entry") }}
                         >
                           Delete
                         </Button>
@@ -325,6 +348,27 @@ export const TransactionsPage = () => {
         onSaveExpense={handleSaveExpense}
         onSaveIncome={handleSaveIncome}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => { if (!o) setPendingDelete(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete {pendingDelete?.kind === "income" ? "income entry" : "expense"}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-medium text-foreground">&ldquo;{pendingDelete?.label}&rdquo;</span> will be permanently removed. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleConfirmDelete}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -6,7 +6,7 @@ import { exportToCSV, exportToJSON } from "@/lib/export"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
+import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Label } from "recharts"
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { DownloadCloud, Table2 } from "lucide-react"
 
@@ -49,7 +49,7 @@ export const AnalyticsPage = () => {
   const monthlyData = React.useMemo(() => {
     if (!expenses) return []
     const map: Record<string, number> = {}
-    
+
     expenses.forEach(exp => {
       const date = new Date(exp.date)
       const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}` // YYYY-MM
@@ -65,6 +65,11 @@ export const AnalyticsPage = () => {
         amount: map[key]
       }
     }).slice(-12) // Show last 12 active months
+  }, [expenses])
+
+  const totalExpenses = React.useMemo(() => {
+    if (!expenses) return 0
+    return expenses.reduce((acc, exp) => acc + exp.amount, 0)
   }, [expenses])
 
   const chartConfig = React.useMemo(() => {
@@ -114,11 +119,34 @@ export const AnalyticsPage = () => {
                           {categoryData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
+                          <Label
+                            content={({ viewBox }) => {
+                              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                return (
+                                  <text
+                                    x={viewBox.cx}
+                                    y={viewBox.cy}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                  >
+                                    <tspan
+                                      x={viewBox.cx}
+                                      y={viewBox.cy}
+                                      className="fill-foreground text-3xl font-bold"
+                                    >
+                                      {totalExpenses}
+                                    </tspan>
+
+                                  </text>
+                                )
+                              }
+                            }}
+                          />
                         </Pie>
                       </PieChart>
                     </ChartContainer>
                   </div>
-                  
+
                   {/* Data Table */}
                   <div className="space-y-3">
                     {categoryData.map(item => (
@@ -129,7 +157,7 @@ export const AnalyticsPage = () => {
                           <span className="text-xs text-muted-foreground ml-1">({item.percent.toFixed(1)}%)</span>
                         </div>
                         <span className="font-semibold text-sm">
-                           {defaultCurrency === "BDT" ? "৳" : "$"} {item.amount.toLocaleString()}
+                          {defaultCurrency === "BDT" ? "৳" : "$"} {item.amount.toLocaleString()}
                         </span>
                       </div>
                     ))}
@@ -154,8 +182,8 @@ export const AnalyticsPage = () => {
                     <BarChart data={monthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                       <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} dy={10} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} width={45} tickFormatter={(value) => value >= 1000 ? `${(value/1000).toFixed(1)}k` : value} />
-                      <RechartsTooltip 
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }} width={45} tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value} />
+                      <RechartsTooltip
                         contentStyle={{ borderRadius: '8px', border: '1px solid hsl(var(--border))', fontSize: '13px' }}
                         formatter={(value: number) => [`${defaultCurrency === "BDT" ? "৳" : "$"} ${value.toLocaleString()}`, "Spent"]}
                         cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
@@ -164,7 +192,7 @@ export const AnalyticsPage = () => {
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
-                   <div className="h-full flex items-center justify-center text-muted-foreground">No data available</div>
+                  <div className="h-full flex items-center justify-center text-muted-foreground">No data available</div>
                 )}
               </div>
             </CardContent>
@@ -194,7 +222,7 @@ export const AnalyticsPage = () => {
                 </Button>
               </div>
 
-               <div className="p-4 border rounded-xl flex items-center justify-between">
+              <div className="p-4 border rounded-xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center font-mono font-bold">
                     {`{ }`}
@@ -212,7 +240,7 @@ export const AnalyticsPage = () => {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
       </Tabs>
     </div>
   )

@@ -58,7 +58,7 @@ export function BottomNav({ onFabClick, currentPath, isSettingsActive }: BottomN
           boxShadow: "0 -2px 20px oklch(0 0 0 / 0.15), inset 0 1px 0 oklch(1 0 0 / 0.08)",
         }}
       >
-        <div className="flex items-center h-16 px-1">
+        <div className="flex items-center gap-3 h-fit py-3 px-1 bg-background">
           {/* Left Items */}
           {LeftNavItems.map((item) => (
             <NavItem
@@ -69,8 +69,6 @@ export function BottomNav({ onFabClick, currentPath, isSettingsActive }: BottomN
               isActive={currentPath === item.to}
             />
           ))}
-
-
 
           {/* Right Items */}
           {RightNavItems.map((item) => (

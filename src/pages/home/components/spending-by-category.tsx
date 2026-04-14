@@ -38,8 +38,6 @@ export const SpendingByCategory = ({ byCategory }: SpendingByCategoryProps) => {
                   data={byCategory}
                   dataKey="value"
                   nameKey="name"
-                  stroke="var(--background)"
-                  paddingAngle={0.4}
                 >
                   {byCategory.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />

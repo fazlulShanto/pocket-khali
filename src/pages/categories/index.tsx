@@ -4,7 +4,7 @@ import { CategoryForm } from "@/components/category-form"
 import { Button } from "@/components/ui/button"
 import { Plus, Edit2, Trash2 } from "lucide-react"
 import type { Category } from "@/lib/types"
-import { Icons, getIcon, type IconName } from "@/components/icons"
+import { getIcon } from "@/components/icons"
 
 export const CategoriesPage = () => {
   const { categories, addCategory, updateCategory, deleteCategory } = useCategories()
@@ -53,13 +53,13 @@ export const CategoriesPage = () => {
         {categories?.map((category) => {
           const Icon = getIcon(category.icon)
           return (
-            <div 
-              key={category.id} 
+            <div
+              key={category.id}
               className="flex items-center justify-between p-3 rounded-lg border bg-card transition-colors hover:shadow-sm"
             >
               <div className="flex items-center gap-3 overflow-hidden">
-                <div 
-                  className="flex items-center justify-center w-10 h-10 rounded-full shrink-0" 
+                <div
+                  className="flex items-center justify-center w-10 h-10 rounded-full shrink-0"
                   style={{ backgroundColor: category.color + "20", color: category.color }}
                 >
                   <Icon className="w-5 h-5" />
@@ -75,19 +75,19 @@ export const CategoriesPage = () => {
                   )}
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-1 shrink-0">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   onClick={() => handleOpenEdit(category)}
                 >
                   <Edit2 className="w-4 h-4" />
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   onClick={() => handleDelete(category.id)}
                 >
