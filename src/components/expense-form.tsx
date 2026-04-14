@@ -4,7 +4,7 @@ import { useSettings } from "@/hooks/use-settings"
 import { useTags } from "@/hooks/use-tags"
 import { compressImage, blobToBase64 } from "@/lib/image-compress"
 import type { Expense, PaymentMethod } from "@/lib/types"
-import { Icons, getIcon, type IconName } from "@/components/icons"
+import { getIcon, } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -290,8 +290,8 @@ export function ExpenseForm({ open, onOpenChange, initialData, onSave }: Expense
                         type="button"
                         onClick={() => toggleTag(t.name)}
                         className={`text-xs px-3 py-1 rounded-full border transition-colors ${selectedTags.includes(t.name)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 hover:bg-muted"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/50 hover:bg-muted"
                           }`}
                       >
                         #{t.name}

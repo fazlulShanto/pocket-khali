@@ -1,12 +1,14 @@
 import * as React from "react"
 import { Link, useRouterState, Outlet } from "@tanstack/react-router"
-import { Home, ListOrdered, PieChart, Wallet, Settings } from "lucide-react"
+import { Home, ListOrdered, PieChart, Wallet, Settings, CloudOff, CloudUpload, Cloud, Loader2 } from "lucide-react"
 import { ExpenseForm } from "./expense-form"
 import { Fab } from "./fab"
 import { Toaster } from "@/components/ui/sonner"
 import { useExpenses } from "@/hooks/use-expenses"
 import { toast } from "sonner"
 import { useBudgets } from "@/hooks/use-budgets"
+import { useAuth } from "@/hooks/use-auth"
+import { useSync } from "@/hooks/use-sync"
 
 const NavItems = [
   { icon: Home, label: "Home", to: "/" },
@@ -15,6 +17,44 @@ const NavItems = [
   { icon: Wallet, label: "Budgets", to: "/budgets" },
   { icon: PieChart, label: "Reports", to: "/analytics" },
 ]
+
+function CloudSyncIndicator() {
+  const { user } = useAuth()
+  const { isSyncing, pendingCount } = useSync()
+
+  if (!user) {
+    return (
+      <Link
+        to="/login"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-muted hover:bg-muted/80 transition-colors relative"
+        title="Sign in for Cloud Sync"
+      >
+        <CloudOff className="w-4 h-4 text-muted-foreground" />
+      </Link>
+    )
+  }
+
+  return (
+    <Link
+      to="/settings"
+      className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500/10 hover:bg-green-500/20 transition-colors relative"
+      title={isSyncing ? "Syncing..." : pendingCount > 0 ? `${pendingCount} pending` : "Synced"}
+    >
+      {isSyncing ? (
+        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+      ) : pendingCount > 0 ? (
+        <>
+          <CloudUpload className="w-4 h-4 text-yellow-500" />
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-500 text-[9px] font-bold text-white flex items-center justify-center leading-none">
+            {pendingCount > 9 ? "9+" : pendingCount}
+          </span>
+        </>
+      ) : (
+        <Cloud className="w-4 h-4 text-green-500" />
+      )}
+    </Link>
+  )
+}
 
 export function AppShell() {
   const routerState = useRouterState()
@@ -42,8 +82,24 @@ export function AppShell() {
     toast.success("Expense saved successfully.")
   }
 
+  // Don't show nav/shell on login page
+  const isAuthPage = routerState.location.pathname === "/login"
+  if (isAuthPage) {
+    return (
+      <>
+        <Outlet />
+        <Toaster position="top-center" richColors />
+      </>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background">
+      {/* Top bar with cloud sync indicator */}
+      <div className="fixed top-0 right-0 z-30 p-3">
+        <CloudSyncIndicator />
+      </div>
+
       <main className="flex-1 w-full bg-background relative overflow-x-hidden">
         <Outlet />
       </main>

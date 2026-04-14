@@ -1,5 +1,7 @@
 export type PaymentMethod = "cash" | "bank_card" | "bkash" | "rocket" | "nagad" | "other"
 
+export type SyncStatus = "pending" | "synced" | "local-only"
+
 export interface Expense {
   id?: number
   amount: number
@@ -13,6 +15,7 @@ export interface Expense {
   photo?: Blob // compressed image blob
   createdAt: Date
   updatedAt: Date
+  syncStatus?: SyncStatus // undefined = local-only (pre-sync feature)
 }
 
 export interface Category {

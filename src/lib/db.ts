@@ -21,6 +21,10 @@ export class PocketKhaliDB extends Dexie {
     this.version(2).stores({
       categories: "++id, name, order"
     })
+    // v3: add syncStatus index to expenses for cloud sync
+    this.version(3).stores({
+      expenses: "++id, date, categoryId, [categoryId+date], syncStatus"
+    })
   }
 }
 
