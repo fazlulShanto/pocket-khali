@@ -39,14 +39,14 @@ export function useExpenses() {
   }
 
   const deleteExpense = async (id: number) => {
+    const expense = await db.expenses.get(id)
     // Soft-delete remotely so the deletion propagates to other devices
     const { data } = await supabase.auth.getSession()
-    if (data.session?.user && navigator.onLine) {
+    if (data.session?.user && navigator.onLine && expense?.remoteId) {
       await supabase
         .from("expenses")
         .update({ deleted_at: new Date().toISOString() })
-        .eq("user_id", data.session.user.id)
-        .eq("local_id", id)
+        .eq("id", expense.remoteId)   // target by UUID, not local_id
         .catch(console.warn)
     }
     return db.expenses.delete(id)

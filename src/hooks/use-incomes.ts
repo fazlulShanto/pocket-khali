@@ -1,5 +1,6 @@
 import { useLiveQuery } from "dexie-react-hooks"
 import { db } from "../lib/db"
+import { supabase } from "../lib/supabase"
 import type { Income } from "../lib/types"
 
 export function useIncomes() {
@@ -10,6 +11,7 @@ export function useIncomes() {
       ...income,
       createdAt: new Date(),
       updatedAt: new Date(),
+      syncStatus: "pending",
     })
   }
 
@@ -20,10 +22,20 @@ export function useIncomes() {
     return db.incomes.update(id, {
       ...changes,
       updatedAt: new Date(),
+      syncStatus: "pending",
     })
   }
 
   const deleteIncome = async (id: number) => {
+    const income = await db.incomes.get(id)
+    const { data } = await supabase.auth.getSession()
+    if (data.session?.user && navigator.onLine && income?.remoteId) {
+      await supabase
+        .from("incomes")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", income.remoteId)   // target by UUID, not local_id
+        .catch(console.warn)
+    }
     return db.incomes.delete(id)
   }
 

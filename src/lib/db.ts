@@ -30,6 +30,15 @@ export class PocketKhaliDB extends Dexie {
     this.version(4).stores({
       incomes: "++id, date, source"
     })
+    // v5: add syncStatus index to incomes for cloud sync
+    this.version(5).stores({
+      incomes: "++id, date, source, syncStatus"
+    })
+    // v6: add remoteId index (Supabase UUID) for reliable cross-device deletes
+    this.version(6).stores({
+      expenses: "++id, date, categoryId, [categoryId+date], syncStatus, remoteId",
+      incomes: "++id, date, source, syncStatus, remoteId"
+    })
   }
 }
 

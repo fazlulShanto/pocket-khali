@@ -18,8 +18,11 @@ export function useSync(): SyncStatus {
   const [lastResult, setLastResult] = React.useState<SyncResult | null>(null)
 
   const lastSyncRow = useLiveQuery(() => db.settings.get("lastSyncAt"))
-  const pendingCount =
+  const pendingExpenses =
     useLiveQuery(() => db.expenses.where("syncStatus").equals("pending").count()) ?? 0
+  const pendingIncomes =
+    useLiveQuery(() => db.incomes.where("syncStatus").equals("pending").count()) ?? 0
+  const pendingCount = pendingExpenses + pendingIncomes
 
   const lastSyncAt = lastSyncRow?.value ? new Date(lastSyncRow.value as string) : null
 

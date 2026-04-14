@@ -4,6 +4,7 @@ export type SyncStatus = "pending" | "synced" | "local-only"
 
 export interface Expense {
   id?: number
+  remoteId?: string   // Supabase UUID — stored after first push or pull
   amount: number
   currency: string
   categoryId: number
@@ -44,6 +45,7 @@ export interface Budget {
 
 export interface Income {
   id?: number
+  remoteId?: string   // Supabase UUID — stored after first push or pull
   amount: number
   currency: string
   source: string
@@ -52,6 +54,7 @@ export interface Income {
   date: Date
   createdAt: Date
   updatedAt: Date
+  syncStatus?: SyncStatus // undefined = local-only (pre-sync feature)
 }
 
 export interface Settings {
