@@ -1,14 +1,14 @@
 import { ThemeProvider } from '@/components/theme-provider'
-import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { AppShell } from '@/components/app-shell'
 
 const RootLayout = () => (
-
     <>
         <ThemeProvider>
-            <Outlet />
+            <AppShell />
         </ThemeProvider>
-        <TanStackRouterDevtools />
+        {import.meta.env.MODE === 'development1' && <TanStackRouterDevtools position="bottom-right" />}
     </>
 )
 
