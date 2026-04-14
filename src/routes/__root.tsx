@@ -5,18 +5,18 @@ import { AppShell } from '@/components/app-shell'
 import type { User } from '@supabase/supabase-js'
 
 export interface RouterContext {
-  auth: User | null
+    auth: User | null
 }
 
 const RootLayout = () => (
-  <>
-    <ThemeProvider>
-      <AppShell />
-    </ThemeProvider>
-    {import.meta.env.MODE === 'development1' && <TanStackRouterDevtools position="bottom-right" />}
-  </>
+    <>
+        <ThemeProvider>
+            <AppShell />
+        </ThemeProvider>
+        {import.meta.env.MODE === 'development1' && <TanStackRouterDevtools position="bottom-right" />}
+    </>
 )
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: RootLayout,
+    component: RootLayout,
 })
