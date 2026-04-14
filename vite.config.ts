@@ -15,15 +15,20 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['react.svg', 'icon_64.png', 'icon_256.png', 'icon_512.png', 'icon_32.webp'],
+      includeAssets: ['icon_64.png', 'icon_256.png', 'icon_512.png', 'icon_maskable.png'],
       devOptions: {
         enabled: true
       },
       manifest: {
         name: 'Pocket Khali',
         short_name: 'Pocket Khali',
-        description: 'Pocket Khali Description',
-        theme_color: '#ffffff',
+        description: 'Your privacy-first expense tracker',
+        theme_color: '#6d28d9',
+        background_color: '#0f0a1e',
+        display: 'standalone',
+        start_url: '/',
+        scope: '/',
+        orientation: 'portrait',
         icons: [
           {
             src: '/icon_64.png',
@@ -32,13 +37,19 @@ export default defineConfig({
           },
           {
             src: '/icon_256.png',
-            sizes: '256x256',
+            sizes: '192x192',
             type: 'image/png',
           },
           {
             src: '/icon_512.png',
             sizes: '512x512',
             type: 'image/png',
+          },
+          {
+            src: '/icon_maskable.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
