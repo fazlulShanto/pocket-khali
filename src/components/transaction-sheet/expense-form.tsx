@@ -19,9 +19,10 @@ interface ExpenseFormProps {
   onClose: () => void
 }
 
-function FieldError({ errors }: { errors: string[] }) {
+function FieldError({ errors }: { errors: unknown[] }) {
   if (!errors.length) return null
-  return <p className="text-xs text-destructive mt-1">{errors[0]}</p>
+  const message = typeof errors[0] === "string" ? errors[0] : (errors[0] as { message?: string })?.message ?? String(errors[0])
+  return <p className="text-xs text-destructive mt-1">{message}</p>
 }
 
 export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormProps) {
@@ -113,7 +114,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                 className="text-xl font-bold h-fit pl-10 border-0 border-b-2 border-transparent bg-muted/30 focus-visible:ring-0 focus-visible:border-primary rounded-none"
                 placeholder="0.00"
               />
-              <FieldError errors={field.state.meta.errors as string[]} />
+              <FieldError errors={field.state.meta.errors} />
             </div>
           )}
         </form.Field>
@@ -146,7 +147,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                 onChange={(e) => field.handleChange(e.target.value)}
                 className="text-sm py-2 border-x-0 border-t-0 border-b bg-transparent focus-visible:ring-0 focus-visible:border-primary rounded-none px-1"
               />
-              <FieldError errors={field.state.meta.errors as string[]} />
+              <FieldError errors={field.state.meta.errors} />
             </div>
           )}
         </form.Field>
@@ -179,7 +180,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                   )
                 })}
               </div>
-              <FieldError errors={field.state.meta.errors as string[]} />
+              <FieldError errors={field.state.meta.errors} />
             </div>
           )}
         </form.Field>
@@ -212,7 +213,7 @@ export function ExpenseFormFields({ initialData, onSave, onClose }: ExpenseFormP
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
                     />
-                    <FieldError errors={field.state.meta.errors as string[]} />
+                    <FieldError errors={field.state.meta.errors} />
                   </div>
                 )}
               </form.Field>
