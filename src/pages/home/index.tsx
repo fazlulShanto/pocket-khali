@@ -8,7 +8,7 @@ import { DailySpendingChart } from "./components/daily-spending-chart"
 import { RecentTransactions } from "./components/recent-transactions"
 
 export const HomePage = () => {
-  const { totalThisMonth, percentChange, byCategory, dailyTrend, recentExpenses } = useDashboardStats()
+  const { totalThisMonth, totalLastMonth, percentChange, byCategory, dailyTrend, recentExpenses } = useDashboardStats()
   const { categories } = useCategories()
   const { settings } = useSettings()
 
@@ -31,6 +31,7 @@ export const HomePage = () => {
       {/* Summary Card */}
       <SummaryCard
         totalThisMonth={totalThisMonth}
+        totalLastMonth={totalLastMonth}
         percentChange={percentChange}
         defaultCurrency={defaultCurrency}
       />
