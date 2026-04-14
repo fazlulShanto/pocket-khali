@@ -1,5 +1,5 @@
 import * as React from "react"
-import { TrendingUp, TrendingDown, Wallet, PiggyBank } from "lucide-react"
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, ArrowUp, ArrowDown, BadgeDollarSign } from "lucide-react"
 import { useBudgets } from "@/hooks/use-budgets"
 
 interface SummaryCardProps {
@@ -56,16 +56,6 @@ export const SummaryCard = ({
       <div style={{ position: "absolute", top: "-3rem", right: "-3rem", width: "10rem", height: "10rem", background: "radial-gradient(circle, rgba(167,139,250,0.25) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
       <div style={{ position: "absolute", bottom: "-2rem", left: "-2rem", width: "8rem", height: "8rem", background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)", borderRadius: "50%", pointerEvents: "none" }} />
 
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-        <p style={{ color: "rgba(221,214,254,0.75)", fontSize: "0.775rem", fontWeight: 500, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-          This Month
-        </p>
-        <div style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "999px", padding: "0.25rem 0.75rem", display: "flex", alignItems: "center", gap: "0.35rem" }}>
-          <Wallet size={12} color="rgba(221,214,254,0.8)" />
-          <span style={{ color: "rgba(221,214,254,0.9)", fontSize: "0.72rem", fontWeight: 600 }}>Overview</span>
-        </div>
-      </div>
 
       {/* Total expense (main number) */}
       <div style={{ marginBottom: "0.5rem" }}>
@@ -104,33 +94,33 @@ export const SummaryCard = ({
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
         {/* Income */}
         <div style={{ background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: "1rem", padding: "0.6rem 0.6rem", display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-            <span style={{ fontSize: "0.65rem" }}>⬆️</span>
+          <div className="flex item-center gap-1">
+            <ArrowUp className="size-3" />
             <span style={{ color: "rgba(196,181,253,0.65)", fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>Income</span>
           </div>
-          <span style={{ color: "#86efac", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>
+          <span style={{ color: "#86efac", fontWeight: 700, fontSize: "1rem", whiteSpace: "nowrap" }}>
             {currencySymbol}{formatAmount(totalIncomeThisMonth)}
           </span>
         </div>
 
         {/* Expense */}
         <div style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", borderRadius: "1rem", padding: "0.6rem 0.6rem", display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-            <span style={{ fontSize: "0.65rem" }}>⬇️</span>
+          <div className="flex item-center gap-1">
+            <ArrowDown className="size-3" />
             <span style={{ color: "rgba(196,181,253,0.65)", fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>Expense</span>
           </div>
-          <span style={{ color: "#fca5a5", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>
+          <span style={{ color: "#fca5a5", fontWeight: 700, fontSize: "1rem", whiteSpace: "nowrap" }}>
             {currencySymbol}{formatAmount(totalThisMonth)}
           </span>
         </div>
 
         {/* Savings */}
         <div style={{ background: savingsPositive ? "rgba(167,139,250,0.15)" : "rgba(239,68,68,0.12)", border: `1px solid ${savingsPositive ? "rgba(167,139,250,0.3)" : "rgba(239,68,68,0.25)"}`, borderRadius: "1rem", padding: "0.6rem 0.6rem", display: "flex", flexDirection: "column", gap: "0.2rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
-            <PiggyBank size={10} color="rgba(196,181,253,0.65)" />
-            <span style={{ color: "rgba(196,181,253,0.65)", fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>Savings</span>
+          <div className="flex item-center gap-1">
+            <BadgeDollarSign size={12} color="rgba(196,181,253,0.65)" />
+            <span style={{ color: "rgba(196,181,253,0.65)", fontSize: "0.6rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>Remaining</span>
           </div>
-          <span style={{ color: savingsPositive ? "#c4b5fd" : "#fca5a5", fontWeight: 700, fontSize: "0.85rem", whiteSpace: "nowrap" }}>
+          <span style={{ color: savingsPositive ? "#c4b5fd" : "#fca5a5", fontWeight: 700, fontSize: "1rem", whiteSpace: "nowrap" }}>
             {savingsPositive ? "+" : "-"}{currencySymbol}{formatAmount(savings)}
           </span>
         </div>

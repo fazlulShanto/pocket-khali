@@ -55,10 +55,6 @@ export function AppShell() {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background">
-      <div className="p-3">
-        <CloudSyncIndicator />
-      </div>
-
       <main className="flex-1 w-full bg-background relative overflow-x-hidden pb-28">
         <Outlet />
       </main>

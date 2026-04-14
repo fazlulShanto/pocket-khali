@@ -35,12 +35,13 @@ export function useDashboardStats() {
     let totalLastMonth = 0
 
     const categoryMap: Record<number, number> = {}
-    const dailyMap: Record<number, number> = {}
+    // dailyCategoryMap: day → { categoryId: amount }
+    const dailyCategoryMap: Record<number, Record<number, number>> = {}
 
     // Initialize daily map for this month
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
     for (let i = 1; i <= daysInMonth; i++) {
-      dailyMap[i] = 0
+      dailyCategoryMap[i] = {}
     }
 
     expenses.forEach(exp => {
@@ -54,9 +55,10 @@ export function useDashboardStats() {
         // Category grouping
         categoryMap[exp.categoryId] = (categoryMap[exp.categoryId] || 0) + exp.amount
 
-        // Daily grouping
+        // Daily + category grouping
         const day = date.getDate()
-        dailyMap[day] += exp.amount
+        if (!dailyCategoryMap[day]) dailyCategoryMap[day] = {}
+        dailyCategoryMap[day][exp.categoryId] = (dailyCategoryMap[day][exp.categoryId] || 0) + exp.amount
       } else if (month === lastMonth && year === lastMonthYear) {
         totalLastMonth += exp.amount
       }
@@ -101,11 +103,15 @@ export function useDashboardStats() {
       }
     }).sort((a, b) => b.value - a.value)
 
-    // Daily Trend
-    const dailyTrend = Object.keys(dailyMap).map(day => ({
-      day: Number(day),
-      amount: dailyMap[Number(day)]
-    }))
+    // Daily Trend – one entry per day, with a key per categoryId
+    const dailyTrend = Object.keys(dailyCategoryMap).map(dayStr => {
+      const day = Number(dayStr)
+      const entry: Record<string, number> & { day: number } = { day }
+      Object.keys(dailyCategoryMap[day]).forEach(catIdStr => {
+        entry[catIdStr] = dailyCategoryMap[day][Number(catIdStr)]
+      })
+      return entry
+    })
 
     // Recent Expenses
     const recentExpenses = expenses.slice(0, 5)

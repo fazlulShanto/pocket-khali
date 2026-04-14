@@ -26,7 +26,7 @@ export const SpendingByCategory = ({ byCategory }: SpendingByCategoryProps) => {
   return (
     <Card className="rounded-2xl shadow-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base">Spending by Category</CardTitle>
+        <CardTitle className="text-base">Total Spending by Category</CardTitle>
       </CardHeader>
       <CardContent>
         {byCategory.length > 0 ? (
@@ -38,11 +38,8 @@ export const SpendingByCategory = ({ byCategory }: SpendingByCategoryProps) => {
                   data={byCategory}
                   dataKey="value"
                   nameKey="name"
-                  innerRadius={60}
-                  outerRadius={80}
-                  strokeWidth={4}
                   stroke="var(--background)"
-                  paddingAngle={2}
+                  paddingAngle={0.4}
                 >
                   {byCategory.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
